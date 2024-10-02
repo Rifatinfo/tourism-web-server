@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config(); // Load environment variables
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // Middleware
 app.use(cors());
@@ -26,6 +26,24 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
+
+
+        const tourCartCollection = client.db("countryTour_data").collection("countryTour");
+
+        app.get('/bookings', async (req, res) => {
+            const cursor = tourCartCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get('/bookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await tourCartCollection.findOne(query);  // Fetch all fields
+            res.send(result);
+        });
+
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
