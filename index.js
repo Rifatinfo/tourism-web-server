@@ -29,6 +29,7 @@ async function run() {
 
 
         const tourCartCollection = client.db("countryTour_data").collection("countryTour");
+        const userCollection = client.db("userTour").collection("user");
 
         app.get('/bookings', async (req, res) => {
             const cursor = tourCartCollection.find();
@@ -42,6 +43,19 @@ async function run() {
             const result = await tourCartCollection.findOne(query);  // Fetch all fields
             res.send(result);
         });
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            console.log('new user', user);
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        })
+
+        app.get('/users', async (req, res) => {
+            const cursor = userCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
